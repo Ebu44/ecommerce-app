@@ -12,22 +12,25 @@ const createProduct = async (req, res) => {
     available,
   } = req.body;
 
-  const product = await Product.create({
-    category,
-    productCode,
-    title,
-    imagePath,
-    description,
-    price,
-    manufacturer,
-    available,
-  });
-
-  res.status(201).send(product);
+  try {
+    const product = await Product.create({
+      category,
+      productCode,
+      title,
+      imagePath,
+      description,
+      price,
+      manufacturer,
+      available,
+    });
+    res.status(201).send(product);
+  } catch (err) {
+    res.send(err);
+  }
 };
 
 const getProduct = async (req, res) => {
-  const products = await Product.find();
+  const products = await Product.find().limit(Number(req.query.limit));
 
   res.send(products);
 };

@@ -14,7 +14,6 @@ const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);
-
 router.get("/api/user/:slug", getUser);
 
 router.get("/api/:id/cart", getCart);
