@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 const { Schema } = mongoose;
 
 const ProductSchema = new Schema({
@@ -17,6 +18,10 @@ const ProductSchema = new Schema({
     type: String,
     required: true,
   },
+  slug: {
+    type: String,
+    required: true,
+  },
   imagePath: {
     type: String,
     required: true,
@@ -25,12 +30,14 @@ const ProductSchema = new Schema({
     type: String,
     required: true,
   },
+  totalQty: {
+    type: Number,
+    default: 0,
+    required: true,
+  },
   price: {
     type: Number,
     required: true,
-  },
-  manufacturer: {
-    type: String,
   },
   available: {
     type: Boolean,

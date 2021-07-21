@@ -1,5 +1,6 @@
 const express = require("express");
 const database = require("./database/DatabaseConnect");
+const path = require("path");
 
 database();
 
@@ -35,5 +36,7 @@ app.use(adminBro.options.rootPath, router);
 
 app.use("/api", verifyToken);
 app.use("/", indexRouter);
+
+app.use(express.static(path.join(__dirname, "public")));
 
 module.exports = app;
