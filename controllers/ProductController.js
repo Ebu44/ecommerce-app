@@ -1,6 +1,7 @@
 const Product = require("../models/Product");
+const asyncHandler = require("express-async-handler");
 
-const createProduct = async (req, res) => {
+const createProduct = asyncHandler(async (req, res) => {
   const {
     category,
     productCode,
@@ -13,25 +14,25 @@ const createProduct = async (req, res) => {
     available,
   } = req.body;
 
-  try {
-    const product = await Product.create({
-      category,
-      productCode,
-      title,
-      slug,
-      imagePath,
-      description,
-      price,
-      totalQty,
-      available,
-    });
-    res.status(201).send(product);
-  } catch (err) {
-    res.send(err);
-  }
-};
+  const product = await Product.create({
+    category,
+    productCode,
+    title,
+    slug,
+    imagePath,
+    description,
+    price,
+    totalQty,
+    available,
+  });
+  res.status(201).json({
+    success: true,
+    message: "Product successfully created",
+    data: product,
+  });
+});
 
-const getProduct = async (req, res) => {
+const getProduct = asyncHandler(async (req, res) => {
   const perPage = 12;
   let page = parseInt(req.query.page) || 1;
 
@@ -39,17 +40,23 @@ const getProduct = async (req, res) => {
     .limit(perPage)
     .skip(perPage * page - perPage);
 
-  res.send(products);
-};
+  res.json({
+    success: true,
+    data: products,
+  });
+});
 
-const searchProduct = async (req, res) => {
+const searchProduct = asyncHandler(async (req, res) => {
   const searchedProduct = await Product.find({
     title: { $regex: ".*" + req.query.search + ".*" },
   });
-  res.send(searchedProduct);
-};
+  res.json({
+    success: true,
+    data: searchedProduct,
+  });
+});
 
-const imageUpload = async (req, res) => {
+const imageUpload = asyncHandler(async (req, res) => {
   await Product.findByIdAndUpdate(
     req.params.id,
     {
@@ -65,7 +72,7 @@ const imageUpload = async (req, res) => {
     success: true,
     message: "Image Upload Successfully",
   });
-};
+});
 
 module.exports = {
   createProduct,

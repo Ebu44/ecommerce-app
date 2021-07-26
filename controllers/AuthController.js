@@ -1,9 +1,10 @@
 const User = require("../models/User");
+const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET_KEY } = require("../config/env/keys");
 
-const register = async (req, res) => {
+const register = asyncHandler(async (req, res) => {
   const { email, password, first_name, last_name } = req.body;
 
   const user = await User.findOne({
@@ -14,28 +15,24 @@ const register = async (req, res) => {
   const slug = full_name.toLowerCase();
 
   if (!user) {
-    try {
-      const hash = await bcrypt.hash(password, 10);
-      const data = await User.create({
-        email,
-        hashed_password: hash,
-        first_name,
-        last_name,
-        slug,
-        is_deleted: false,
-        is_active: false,
-        is_staff: false,
-      });
-      res.status(201).send(data);
-    } catch (err) {
-      res.status(401).send(err);
-    }
+    const hash = await bcrypt.hash(password, 10);
+    const data = await User.create({
+      email,
+      hashed_password: hash,
+      first_name,
+      last_name,
+      slug,
+      is_deleted: false,
+      is_active: false,
+      is_staff: false,
+    });
+    res.status(201).json(data);
   } else {
-    res.send("User already registered");
+    res.json({ status: false, message: "User already registered" });
   }
-};
+});
 
-const login = async (req, res) => {
+const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   const user = await User.findOne({
@@ -51,21 +48,21 @@ const login = async (req, res) => {
       const token = await jwt.sign(payload, JWT_SECRET_KEY, {
         expiresIn: 720,
       });
-      res.send({ status: true, token: token });
+      res.json({ status: true, token: token });
     } else {
-      res.send({ status: false, message: "Wrong password" });
+      res.json({ status: false, message: "Wrong password" });
     }
   } else {
-    res.send("Please Register");
+    res.json({ status: false, message: "Can't find user" });
   }
-};
+});
 
-const getUser = async (req, res) => {
+const getUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({
     slug: req.params.slug,
   });
-  res.send(JSON.stringify(user));
-};
+  res.json(user);
+});
 
 module.exports = {
   register,

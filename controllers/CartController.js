@@ -1,32 +1,39 @@
 const Cart = require("../models/Cart");
+const asyncHandler = require("express-async-handler");
 
-const createCart = async (req, res) => {
+const createCart = asyncHandler(async (req, res) => {
   const { items, totalQty, totalCost } = req.body;
 
-  try {
-    const cart = await Cart.create({
-      user: req.params.id,
-      items,
-      totalQty,
-      totalCost,
-    });
-    res.send(cart);
-  } catch (err) {
-    res.send(err);
-  }
-};
+  const cart = await Cart.create({
+    user: req.params.id,
+    items,
+    totalQty,
+    totalCost,
+  });
+  res.json({
+    success: true,
+    message: "Cart created",
+    data: cart,
+  });
+});
 
-const getCart = async (req, res) => {
+const getCart = asyncHandler(async (req, res) => {
   const cart = await Cart.find({
     user: req.params.id,
   });
 
   if (cart) {
-    res.send(cart);
+    res.json({
+      success: true,
+      data: cart,
+    });
   } else {
-    res.send("There isn't any cart");
+    res.json({
+      success: true,
+      message: "There isn't any cart",
+    });
   }
-};
+});
 
 module.exports = {
   getCart,

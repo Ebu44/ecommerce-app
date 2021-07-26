@@ -1,6 +1,7 @@
 const express = require("express");
 const database = require("./database/DatabaseConnect");
 const path = require("path");
+const customErrorHandler = require("./middleware/errors/customErrorHandler");
 
 database();
 
@@ -36,6 +37,8 @@ app.use(adminBro.options.rootPath, router);
 
 app.use("/api", verifyToken);
 app.use("/", indexRouter);
+
+app.use(customErrorHandler);
 
 app.use(express.static(path.join(__dirname, "public")));
 
