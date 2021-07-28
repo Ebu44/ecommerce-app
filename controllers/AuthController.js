@@ -1,8 +1,6 @@
 const User = require("../models/User");
 const asyncHandler = require("express-async-handler");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const { JWT_SECRET_KEY } = require("../config/env/keys");
+const { sendJwtToClient } = require("../helpers/authorization/tokenHelpers");
 
 const register = asyncHandler(async (req, res) => {
   const { email, password, first_name, last_name } = req.body;
@@ -15,10 +13,9 @@ const register = asyncHandler(async (req, res) => {
   const slug = full_name.toLowerCase();
 
   if (!user) {
-    const hash = await bcrypt.hash(password, 10);
     const data = await User.create({
       email,
-      hashed_password: hash,
+      password,
       first_name,
       last_name,
       slug,
@@ -26,7 +23,7 @@ const register = asyncHandler(async (req, res) => {
       is_active: false,
       is_staff: false,
     });
-    res.status(201).json(data);
+    sendJwtToClient(data, res);
   } else {
     res.json({ status: false, message: "User already registered" });
   }
@@ -58,10 +55,13 @@ const login = asyncHandler(async (req, res) => {
 });
 
 const getUser = asyncHandler(async (req, res) => {
-  const user = await User.findOne({
-    slug: req.params.slug,
+  res.json({
+    success: true,
+    data: {
+      id: decoded.id,
+      firstName: decoded.first_name,
+    },
   });
-  res.json(user);
 });
 
 module.exports = {

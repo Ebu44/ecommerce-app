@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const { Schema } = mongoose;
 
@@ -18,7 +20,7 @@ const UserSchema = new Schema({
     type: String,
     unique: [true, "`{PATH} must be unique`"],
   },
-  hashed_password: {
+  password: {
     type: String,
     required: true,
   },
@@ -37,5 +39,33 @@ const UserSchema = new Schema({
 });
 
 UserSchema.set("timestamps", true);
+
+UserSchema.methods.generateJwtFromUser = function () {
+  const { JWT_SECRET_KEY } = require("../config/env/keys");
+
+  const payload = {
+    id: this._id,
+    email: this.email,
+  };
+  const token = jwt.sign(payload, JWT_SECRET_KEY, {
+    expiresIn: 720,
+  });
+
+  return token;
+};
+
+UserSchema.pre("save", function (next) {
+  if (!this.isModified("password")) next();
+
+  bcrypt.genSalt(10, (err, salt) => {
+    if (err) next(err);
+
+    bcrypt.hash(this.password, salt, (err, hash) => {
+      if (err) next(err);
+      this.password = hash;
+      next();
+    });
+  });
+});
 
 module.exports = mongoose.model("User", UserSchema);

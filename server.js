@@ -16,7 +16,7 @@ const Cart = require("./models/Cart");
 const Order = require("./models/Order");
 
 const indexRouter = require("./routers/index");
-const verifyToken = require("./middleware/verify-token");
+//const verifyToken = require("./middleware/verify-token");
 
 const app = express();
 
@@ -35,7 +35,6 @@ const router = AdminBroExpress.buildRouter(adminBro);
 
 app.use(adminBro.options.rootPath, router);
 
-app.use("/api", verifyToken);
 app.use("/", indexRouter);
 
 app.use(customErrorHandler);

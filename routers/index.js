@@ -12,13 +12,14 @@ const {
   imageUpload,
 } = require("../controllers/ProductController");
 
+const getAccessToRoute = require("../middleware/authorization/auth");
 const profileImageUpload = require("../middleware/libraries/ImageUpload");
 
 const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);
-router.get("/api/user/:slug", getUser);
+router.get("/api/user/:slug", getAccessToRoute, getUser);
 
 router.get("/api/:id/cart", getCart);
 router.post("/api/:id/cart", createCart);
