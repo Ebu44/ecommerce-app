@@ -1,5 +1,10 @@
 const express = require("express");
-const { register, login, getUser } = require("../controllers/AuthController");
+const {
+  register,
+  login,
+  logout,
+  getUser,
+} = require("../controllers/AuthController");
 const { getCart, createCart } = require("../controllers/CartController");
 const {
   createCategory,
@@ -19,6 +24,7 @@ const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);
+router.post("/logout", logout);
 router.get("/api/user/:slug", getAccessToRoute, getUser);
 
 router.get("/api/:id/cart", getCart);

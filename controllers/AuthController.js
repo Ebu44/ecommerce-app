@@ -1,6 +1,9 @@
 const User = require("../models/User");
+const bcrypt = require("bcrypt");
 const asyncHandler = require("express-async-handler");
 const { sendJwtToClient } = require("../helpers/authorization/tokenHelpers");
+const { NODE_ENV } = require("../config/env/keys");
+const sendEmail = require("../helpers/email/emailSender");
 
 const register = asyncHandler(async (req, res) => {
   const { email, password, first_name, last_name } = req.body;
@@ -23,6 +26,7 @@ const register = asyncHandler(async (req, res) => {
       is_active: false,
       is_staff: false,
     });
+    //sendEmail(user, slug);
     sendJwtToClient(data, res);
   } else {
     res.json({ status: false, message: "User already registered" });
@@ -34,18 +38,11 @@ const login = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({
     email,
-  });
-
+  }).select("+password");
   if (user) {
-    const result = await bcrypt.compare(password, user.hashed_password);
+    const result = await bcrypt.compare(password, user.password);
     if (result) {
-      const payload = {
-        email,
-      };
-      const token = await jwt.sign(payload, JWT_SECRET_KEY, {
-        expiresIn: 720,
-      });
-      res.json({ status: true, token: token });
+      sendJwtToClient(user, res);
     } else {
       res.json({ status: false, message: "Wrong password" });
     }
@@ -54,12 +51,29 @@ const login = asyncHandler(async (req, res) => {
   }
 });
 
+const logout = asyncHandler(async (req, res) => {
+  return res
+    .status(200)
+    .cookie({
+      httpOnly: true,
+      expires: new Date(Date.now()),
+      secure: NODE_ENV === "development" ? false : true,
+    })
+    .json({
+      success: true,
+      message: "Logout Successfull",
+    });
+});
+
 const getUser = asyncHandler(async (req, res) => {
-  res.json({
+  const user = await User.findOne({ slug: req.params.slug });
+  if (!user)
+    return res.json({ success: false, message: "User does not exist" });
+  return res.json({
     success: true,
     data: {
-      id: decoded.id,
-      firstName: decoded.first_name,
+      id: user.id,
+      email: user.email,
     },
   });
 });
@@ -67,5 +81,6 @@ const getUser = asyncHandler(async (req, res) => {
 module.exports = {
   register,
   login,
+  logout,
   getUser,
 };

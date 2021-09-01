@@ -23,6 +23,7 @@ const UserSchema = new Schema({
   password: {
     type: String,
     required: true,
+    select: false,
   },
   is_deleted: {
     type: Boolean,

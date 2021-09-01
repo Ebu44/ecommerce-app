@@ -23,6 +23,7 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+//Admin Panel
 AdminBro.registerAdapter(AdminBroMongoose);
 
 const adminBro = new AdminBro({
@@ -35,8 +36,10 @@ const router = AdminBroExpress.buildRouter(adminBro);
 
 app.use(adminBro.options.rootPath, router);
 
+//Router
 app.use("/", indexRouter);
 
+//Error Handler
 app.use(customErrorHandler);
 
 app.use(express.static(path.join(__dirname, "public")));
