@@ -9,19 +9,19 @@ describe("User Tests", () => {
 
   describe("User register", () => {
     test("When user wants to register", async () => {
-      const response = await request(server).post("/register").send({
+      const response = await request(server).post("/api/register").send({
         email: "a@a.com",
         first_name: "a",
         last_name: "a",
         password: "12345678",
       });
-      expect(response.statusCode).toBe(200);
+      expect(response.statusCode).toBe(201);
     });
   });
 
   describe("User Login", () => {
     test("When user wants to login", async () => {
-      const response = await request(server).post("/login").send({
+      const response = await request(server).post("/api/login").send({
         email: "a@a.com",
         password: "12345678",
       });

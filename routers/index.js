@@ -16,19 +16,19 @@ const profileImageUpload = require("../middleware/libraries/ImageUpload");
 
 const router = express.Router();
 
-router.post("/register", register);
-router.post("/login", login);
+router.post("/api/register", register);
+router.post("/api/login", login);
 router.get("/api/user/:slug", getUser);
 
-router.get("/api/:id/cart", getCart);
-router.post("/api/:id/cart", createCart);
+router.get("/api/user/:id/cart", getCart);
+router.post("/api/user/:id/cart", createCart);
 
-router.post("/category", createCategory);
-router.get("/category", getCategories);
+router.post("/api/category", createCategory);
+router.get("/api/category", getCategories);
 
-router.post("/product", createProduct);
+router.post("/api/product", createProduct);
 router.post(
-  "/api/upload/:id",
+  "/api/user/upload/:id",
   profileImageUpload.single("profile_image"),
   imageUpload
 );

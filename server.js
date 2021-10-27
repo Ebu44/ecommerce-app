@@ -3,7 +3,7 @@ const database = require("./database/DatabaseConnect");
 const path = require("path");
 const customErrorHandler = require("./middleware/errors/customErrorHandler");
 
-database();
+database.connect();
 
 const AdminBro = require("admin-bro");
 const AdminBroExpress = require("@admin-bro/express");
@@ -35,7 +35,7 @@ const router = AdminBroExpress.buildRouter(adminBro);
 
 app.use(adminBro.options.rootPath, router);
 
-app.use("/api", verifyToken);
+app.use("/api/user", verifyToken);
 app.use("/", indexRouter);
 
 app.use(customErrorHandler);

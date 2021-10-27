@@ -65,7 +65,7 @@ const register = asyncHandler(async (req, res) => {
     });
     res.status(201).json(data);
   } else {
-    res.json({ status: false, message: "User already registered" });
+    res.status(400).json({ status: false, message: "User already registered" });
   }
 });
 
@@ -74,8 +74,8 @@ const register = asyncHandler(async (req, res) => {
  * @apiName LoginUser
  * @apiGroup User
  *
- * @apiParam {String} firstname Firstname of the User.
- * @apiParam {String} lastname  Lastname of the User.
+ * @apiParam {Email} email  Email of the User.
+ * @apiParam {String} password Password of the User.
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
